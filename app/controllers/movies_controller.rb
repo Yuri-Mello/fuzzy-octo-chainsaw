@@ -22,6 +22,19 @@ class MoviesController < ApplicationController
     end
   end
 
+  def bulk_create
+    if File.extname(params[:file]) == ".csv"
+      File.open(params[:file]) do |file|
+        csv = CSV.parse(file, headers: true)
+        csv.each do |movie|
+          @movie = Movie.new(movie)
+          @movie.save
+        end
+      end
+    end
+    redirect_to movies_path, notice: "Movies were successfully created."
+  end
+
   private
 
   def movie_params

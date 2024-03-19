@@ -1,8 +1,8 @@
 <h1>Movies</h1>
-<%= link_to "Add new", new_movie_path %>
+<%= link_to "Add new movies", new_movie_path %>
 <% @movies.each do |movie| %>
   <div>
-    <h2><%= movie.title %></h2>
+    <h3><%= movie.title %></h3>
     <p>Director: <%= movie.director %></p>
     <p>Average Score: <%= movie.average_score %></p>
     <%= form_for(current_user.user_movies.find_or_initialize_by(movie_id: movie.id), remote: true) do |f| %>
@@ -11,4 +11,12 @@
       <%= f.submit "Rate" %>
     <% end %>
   </div>
+<% end %>
+<h1>Rate multiple movies at once</h1>
+<%= form_with(url: bulk_create_user_movies_path) do |form| %>
+  <div>
+    <%= form.file_field :file, accept: ".csv" %>
+  </div>
+  </div>
+  <%= form.submit "Score Movies" %>
 <% end %>

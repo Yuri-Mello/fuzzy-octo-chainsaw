@@ -13,3 +13,16 @@
 
   <%= form.submit "Create Movie" %>
 <% end %>
+
+<div>
+<h1>Add multiple movies</h1>
+</div>
+
+<%= form_with(url: bulk_create_movies_path) do |form| %>
+  <div>
+    <%= form.file_field :file, accept: ".csv" %>
+  </div>
+  </div>
+
+  <%= form.submit "Create Movies" %>
+<% end %>
