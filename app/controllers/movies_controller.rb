@@ -1,5 +1,6 @@
 class MoviesController < ApplicationController
   before_action :authenticate_user!
+  require 'csv'
 
   def index
     @movies = Movie.all
@@ -25,14 +26,10 @@ class MoviesController < ApplicationController
   def bulk_create
     if File.extname(params[:file]) == ".csv"
       File.open(params[:file]) do |file|
-        csv = CSV.parse(file, headers: true)
-        csv.each do |movie|
-          @movie = Movie.new(movie)
-          @movie.save
-        end
+        BulkCreateMoviesJob.perform_async(CSV.parse(file).to_a)
       end
     end
-    redirect_to movies_path, notice: "Movies were successfully created."
+    redirect_to movies_path, notice: "Movies are being created."
   end
 
   private

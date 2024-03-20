@@ -1,5 +1,6 @@
 class UserMoviesController < ApplicationController
   before_action :authenticate_user!
+  require 'csv'
 
   def create
     @movie = Movie.find(params[:user_movie][:movie_id])
@@ -12,13 +13,7 @@ class UserMoviesController < ApplicationController
   def bulk_create
     if File.extname(params[:file]) == ".csv"
       File.open(params[:file]) do |file|
-        csv = CSV.parse(file, headers: true)
-        csv.each do |score|
-          @movie = Movie.find(score['movie_id'])
-          current_user.movies << @movie
-          @user_movie = current_user.user_movies.find_by(movie_id: @movie.id)
-          @user_movie.update(score: score['score'])
-        end
+        BulkCreateUserMoviesJob.perform_async(CSV.parse(file).to_a, session[:user_id])
       end
     end
     redirect_to movies_path
