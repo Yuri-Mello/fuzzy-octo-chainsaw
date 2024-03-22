@@ -12,9 +12,18 @@ Rails.application.routes.draw do
   resources :user_movies, only: [:create, :update] do
     post 'bulk_create', on: :collection
   end
-
+ 
   get '/login', to: 'sessions#new'
   delete '/logout', to: 'sessions#destroy'
+
+  scope '/api' do
+    resources :external_movies, only: [:index, :new, :create] do
+      post 'bulk_create', on: :collection
+    end
+    resources :external_sessions, only: [:create]
+    
+    post '/login', to: 'external_sessions#create'
+  end
 
   root 'sessions#new'
 end
